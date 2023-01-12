@@ -1,5 +1,7 @@
 <?php
 
+/** @noinspection PhpUnhandledExceptionInspection */
+
 use App\Application;
 use App\Exceptions\Handler;
 use App\Request;
@@ -18,7 +20,6 @@ $app->bind(Request::class, $request = Request::generate());
 $app->bind(Application::class, $app);
 $app->bind('routes', $routes);
 
-/** @noinspection PhpUnhandledExceptionInspection */
 $app->init();
 
 app(Handler::class)->register();
@@ -29,7 +30,6 @@ if (!ob_start("ob_gzhandler")) ob_start();
 
 app(Router::class)->parse($request);
 
-/** @noinspection PhpUnhandledExceptionInspection */
 $request->handle();
 
 if (ob_get_status()) {

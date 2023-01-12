@@ -19,9 +19,9 @@ class Router
 
     /**
      * @throws ReflectionException
-     * @throws NotFoundException
      */
-    public function parse(Request $request) {
+    public function parse(Request $request): void
+    {
         foreach ($this->routes as $route) {
             if ($route->match($request)) {
                 $request
