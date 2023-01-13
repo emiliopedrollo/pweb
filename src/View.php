@@ -62,7 +62,7 @@ class View
     protected bool $firstCaseInSwitch = true;
     protected array $footer = [];
     protected int $forelseCounter = 0;
-    public bool $includeScope = false;
+    public bool $includeScope = true;
     protected Closure $injectResolver;
     protected array $loopsStack = [];
     protected Mode $mode = Mode::auto;
@@ -2413,11 +2413,11 @@ class View
     }
 
     /**
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      * @noinspection PhpUnused
      */
-    protected function compileAuth(string $expression = ''): string
+    protected function compileAuth(?string $expression = ''): string
     {
         $role = $this->stripParentheses($expression);
         if ($role == '') {

@@ -2,6 +2,8 @@
 
 use App\Application;
 use App\Enums\View\CompileFileName;
+use App\Router;
+use App\Session;
 use App\View;
 use App\Enums\View\Mode;
 use App\Response;
@@ -24,6 +26,30 @@ if (!function_exists('app')) {
             : $app->get($abstract, $default, $arguments);
     }
 }
+
+if (!function_exists('session')) {
+    function session($value, $default = null): mixed {
+        return Session::get($value, $default);
+    }
+}
+if (!function_exists('errors')) {
+    function errors($value): mixed {
+        return Session::get("errors.$value");
+    }
+}
+
+if (!function_exists('route')) {
+    function route($value, array $params = []): mixed {
+        return app(Router::class)->named($value)?->getUri($params);
+    }
+}
+
+if (!function_exists('old')) {
+    function old($value, $default = null): mixed {
+        return Session::get("old.$value", $default);
+    }
+}
+
 
 if (!function_exists('env')) {
     function env($env, mixed $default = null): mixed {

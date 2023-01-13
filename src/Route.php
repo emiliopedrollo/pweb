@@ -13,6 +13,8 @@ class Route
      */
     protected array $middleware = [];
 
+    protected ?string $name = null;
+
     public function __construct(
         protected string $method,
         protected string $route,
@@ -20,7 +22,6 @@ class Route
     ){}
 
     /**
-     * @throws ReflectionException
      * @throws Exception
      */
     public function match(Request $request): bool
@@ -43,6 +44,16 @@ class Route
         return $this->method === 'any' or $request->getMethod() === strtoupper($this->method);
     }
 
+    public function getUri(array $params): string
+    {
+        $value = preg_replace_callback('~(\{.*?})~', function ($match) use ($params) {
+            $value = current($params);
+            next($params);
+            return $value;
+        }, $this->route);
+        return $value;
+    }
+
     public function getController(): ?callable
     {
         if (is_array($this->controller) and (sizeof($this->controller) === 2)) {
@@ -63,6 +74,17 @@ class Route
         }
 
         return null;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function named(string $name): static
+    {
+        $this->name = $name;
+        return $this;
     }
 
 

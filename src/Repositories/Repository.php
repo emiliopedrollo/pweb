@@ -36,54 +36,9 @@ abstract class Repository
      */
     protected string $model;
 
-    /**
-     * @param array $columnMap
-     */
-    public static function setColumnMap(array $columnMap): void
-    {
-        self::$columnMap = $columnMap;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getColumnMap(): array
-    {
-        return static::$columnMap;
-    }
-
-    /**
-     * @param string $attribute
-     * @return string|null
-     */
-    public static function getDatabaseColumn(string $attribute): ?string
-    {
-        $map = static::getColumnMap();
-        foreach ($map as $column => $attributeName) {
-            if ($attribute === $attributeName) return $column;
-        }
-        return null;
-    }
-
     public function getTable(): string
     {
         return $this->table;
-    }
-
-    /**
-     * @param string $query
-     * @param array $bindings
-     * @return PDOStatement|null
-     */
-    private function getStatement(string $query, array $bindings = []): ?PDOStatement
-    {
-        $stmt = (app(DB::class))->connection->prepare($query);
-
-        foreach ($bindings as $binding => $value) {
-            $stmt->bindParam($binding, $value);
-        }
-
-        return $stmt;
     }
 
     /**

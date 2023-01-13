@@ -6,6 +6,7 @@ use App\Application;
 use App\Exceptions\Handler;
 use App\Request;
 use App\Router;
+use App\View;
 
 //require_once __DIR__.'/vendor/autoload.php';
 require_once __DIR__ . '/autoload.php';
@@ -23,6 +24,8 @@ $app->bind('routes', $routes);
 $app->init();
 
 app(Handler::class)->register();
+
+app(View::class)->csrfIsValid();
 
 // todo: boot providers
 

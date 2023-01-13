@@ -86,14 +86,14 @@ class Request
         return $this->middlewares;
     }
 
-//    public function input($input = null, $default = null): mixed {
-//        $result = array_merge(
-//            $this->get(),
-//            $this->post(),
-//            $this->getUriParameters() ?? []
-//        );
-//        return ($input) ? $result[$input] ?? $default : $result;
-//    }
+    public function input($input = null, $default = null): mixed {
+        $result = array_merge(
+            $this->get(),
+            $this->post(),
+            $this->getUriParameters() ?? []
+        );
+        return ($input) ? $result[$input] ?? $default : $result;
+    }
 
     public function get($input = null, $default = null): mixed
     {

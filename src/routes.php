@@ -9,10 +9,10 @@ return [
     Route::Middleware('start_session',[
 
         Route::Middleware('guest',[
-            Route::Get('/login',[Auth::class, 'login']),
-            Route::Post('/login',[Auth::class, 'authenticate']),
-            Route::Get('/register',[Auth::class, 'register']),
-            Route::Post('/register',[Auth::class, 'register']),
+            Route::Get('/login',[Auth::class, 'login'])->named('login'),
+            Route::Post('/login',[Auth::class, 'authenticate'])->named('signin'),
+            Route::Get('/register',[Auth::class, 'register'])->named('register'),
+            Route::Post('/register',[Auth::class, 'signup'])->named('signup'),
         ]),
 
         Route::Get('/logout',[Auth::class, 'logout']),

@@ -20,6 +20,7 @@ class Query
     protected ?string $model = null;
 
     protected array $bindings = [
+        'update' => [],
         'where' => []
     ];
 
@@ -73,6 +74,12 @@ class Query
         return app(DB::class)->connection->quote($value);
     }
 
+    private function clearSelect(): static
+    {
+        $this->select = [];
+        return $this;
+    }
+
     public function addSelect(string $select, bool $raw = false): static
     {
         $this->select[] = [
@@ -116,7 +123,6 @@ class Query
             }
         }
 
-
         return $sql;
 
     }
@@ -135,6 +141,72 @@ class Query
 
         return $statement;
 
+    }
+
+    public function prepareInsert(array $attributes): PDOStatement
+    {
+
+        $columns = join(', ', array_map(fn($column) => $this->normalizeColumnName($column), array_keys($attributes)));
+        $values = join(', ', array_map(fn($value) => '?', $attributes));
+
+        $sql = sprintf(<<<QRY
+            INSERT INTO %s (%s) VALUES (%s)
+        QRY, $this->from, $columns, $values);
+
+        $statement = (app(DB::class))->connection->prepare($sql);
+
+        $i = 1;
+        foreach ($attributes as $binding) {
+            $statement->bindValue($i++, $binding);
+        }
+
+        return $statement;
+
+    }
+
+    public function getLastInsertedId(): ?int
+    {
+        $statement = (app(DB::class))->connection->prepare("SELECT LAST_INSERT_ID() AS LAST_ID");
+
+        if ($statement->execute()) {
+            return $statement->fetch(PDO::FETCH_ASSOC)["LAST_ID"];
+        }
+
+        return null;
+    }
+
+    public function prepareUpdate(array $attributes): PDOStatement
+    {
+        $sets = join(', ',
+            array_map(fn ($column) => sprintf('%s = ?', $column), array_keys($attributes))
+        );
+
+        foreach ($attributes as $attribute) {
+            $this->bindings['update'][] = $attribute;
+        }
+
+        /** @noinspection SqlWithoutWhere */
+        $sql = "UPDATE {$this->from} SET {$sets}";
+
+        if (!empty($this->where)) {
+            $sql .= ' WHERE ';
+            $first = true;
+            foreach ($this->where as $where) {
+                $sql .= $this->buildWhere($where, $first);
+                $first = false;
+            }
+        }
+
+        $statement = (app(DB::class))->connection->prepare($sql);
+
+        $i = 1;
+        foreach ($this->bindings as $bindings) {
+            foreach ($bindings as $binding) {
+                $statement->bindValue($i++, $binding);
+            }
+        }
+
+        return $statement;
     }
 
     /**
@@ -171,7 +243,7 @@ class Query
         return $this;
     }
 
-    public function setModel(string $model): static
+    public function setModel(?string $model): static
     {
         $this->model = $model;
         return $this;
@@ -185,6 +257,10 @@ class Query
      */
     protected function createModelFromRow($attributes): Model|array
     {
+        if (is_null($this->model)) {
+            return $attributes;
+        }
+
         $map = $this->columnMap;
         $args = [];
 
@@ -200,9 +276,11 @@ class Query
 
         }
 
-        return is_null($this->model)
-            ? $args
-            : new ($this->model)($args);
+        /** @var Model $model */
+        $model = (new ($this->model)($args));
+        $model->setExists(true);
+
+        return $model;
     }
 
     /**
@@ -223,6 +301,44 @@ class Query
         }
 
         return null;
+    }
+
+    /**
+     * @param array $attributes
+     * @return int|null
+     */
+    public function insert(array $attributes): ?int
+    {
+        $statement = $this->prepareInsert($attributes);
+        $statement->execute();
+
+        return $this->getLastInsertedId();
+    }
+
+    public function update(array $attributes): bool
+    {
+        $statement = $this->prepareUpdate($attributes);
+        return $statement->execute();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function count(): int
+    {
+        return (clone $this)
+            ->clearSelect()
+            ->setModel(null)
+            ->addSelect('count(*) as count', true)
+            ->first()['count'];
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function exists(): bool
+    {
+        return $this->count() > 0;
     }
 
 

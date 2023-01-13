@@ -32,6 +32,16 @@ class Router
         }
     }
 
+    public function named($name): ?Route
+    {
+        foreach ($this->routes as $route) {
+            if ($route->getName() === $name) {
+                return $route;
+            }
+        }
+        return null;
+    }
+
     /**
      * @throws NotFoundException
      */

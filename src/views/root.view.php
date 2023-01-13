@@ -13,7 +13,7 @@
 
     <h4> {{ strtoupper($blah) }} </h4>
 
-    @auth()
+    @auth
         Welcome @user() <br/>
     @endauth
 
