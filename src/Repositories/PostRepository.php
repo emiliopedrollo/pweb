@@ -15,14 +15,14 @@ class PostRepository extends Repository
 
     protected string $table = 'publicacao';
     protected string $model = Post::class;
-    protected static array $columnMap = [
+    public static array $columnMap = [
         'codigo' => 'id',
         'conteudo' => 'content',
         'agendamento' => 'schedule',
         'codigoUsuario' => 'user_id',
     ];
 
-    protected array $casts = [
+    public array $casts = [
         'schedule' => 'datetime'
     ];
 

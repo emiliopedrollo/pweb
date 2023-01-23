@@ -1,11 +1,14 @@
 <?php
 
 use App\Controllers\Auth;
-use App\Controllers\Index;
+use App\Controllers\Comment;
 use App\Controllers\Post;
 use App\Route;
 
 return [
+
+    Route::Redirect('/','/login'),
+
     Route::Middleware('start_session',[
 
         Route::Middleware('guest',[
@@ -15,22 +18,35 @@ return [
             Route::Post('/register',[Auth::class, 'signup'])->named('signup'),
         ]),
 
-        Route::Get('/logout',[Auth::class, 'logout']),
+        Route::Any('/logout',[Auth::class, 'logout'])->named('logout'),
 
 
         Route::Middleware('authenticated',[
-            Route::Get('/test',[Index::class, 'index']),
-
             Route::Prefix('/posts',[
-                Route::Get('/',[Post::class, 'index']),
-                Route::Get('/{post}',[Post::class, 'show']),
+                Route::Get('/',[Post::class, 'index'])->named('posts'),
+                Route::Get('/create',[Post::class, 'create'])->named('post.create'),
+                Route::Post('/store',[Post::class, 'store'])->named('post.store'),
+
+                Route::Prefix('/{post}', [
+                    Route::Get('/',[Post::class, 'show'])->named('post.show'),
+                    Route::Get('/edit',[Post::class, 'edit'])->named('post.edit'),
+                    Route::Post('/',[Post::class, 'update'])->named('post.update'),
+                    Route::Delete('/',[Post::class, 'destroy'])->named('post.destroy'),
+
+                    Route::Prefix('/comments', [
+                        Route::Post('/store',[Comment::class, 'store'])->named('comment.store'),
+                        Route::Prefix('/{comment}', [
+                            Route::Get('/edit',[Comment::class, 'edit'])->named('comment.edit'),
+                            Route::Post('/',[Comment::class, 'update'])->named('comment.update'),
+                            Route::Delete('/',[Comment::class, 'destroy'])->named('comment.destroy'),
+                        ]),
+                    ])
+
+                ]),
+
             ]),
 
         ]),
-
-        Route::Get('/(?<fuck>[a]{2,5})',[Index::class, 'index']),
-        Route::Get('/',[Index::class, 'index']),
-        Route::Get('/db',[Index::class, 'db']),
 
     ])
 ];

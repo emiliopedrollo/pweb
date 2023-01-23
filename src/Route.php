@@ -3,8 +3,6 @@
 namespace App;
 
 use Exception;
-use ReflectionException;
-use ReflectionFunction;
 
 class Route
 {
@@ -26,7 +24,7 @@ class Route
      */
     public function match(Request $request): bool
     {
-        $route = '~^'.preg_replace('~\{(.*?)}~','(.*?)',rtrim($this->route,'/')).'$~';
+        $route = '~^'.preg_replace('~\{(.*?)}~','([^/]*?)',rtrim($this->route,'/')).'$~';
 
         if (
             $this->matchMethod($request) and
@@ -41,15 +39,13 @@ class Route
 
     protected function matchMethod(Request $request): bool
     {
-        return $this->method === 'any' or $request->getMethod() === strtoupper($this->method);
+        return $this->method === 'any' or mb_strtoupper($request->getMethod()) === mb_strtoupper($this->method);
     }
 
     public function getUri(array $params): string
     {
-        $value = preg_replace_callback('~(\{.*?})~', function ($match) use ($params) {
-            $value = current($params);
-            next($params);
-            return $value;
+        $value = preg_replace_callback('~\{([^/]*?)}~', function ($match) use ($params) {
+            return $params[$match[1]];
         }, $this->route);
         return $value;
     }
@@ -87,15 +83,31 @@ class Route
         return $this;
     }
 
+    public static function Redirect(string $route, string $destination): static
+    {
+        return new Route('any', $route, fn() =>
+            Response::redirect($destination)
+        );
+    }
+
+    public static function Any(string $route, $controller): static
+    {
+        return new Route('any', $route, $controller);
+    }
 
     public static function Get(string $route, $controller): static
     {
-        return new Route('GET',$route, $controller);
+        return new Route('GET', $route, $controller);
     }
 
     public static function Post(string $route, $controller): static
     {
-        return new Route('POST',$route, $controller);
+        return new Route('POST', $route, $controller);
+    }
+
+    public static function Delete(string $route, $controller): static
+    {
+        return new Route('DELETE', $route, $controller);
     }
 
     public static function Middleware(string|array $middlewares, array|callable $routes): array

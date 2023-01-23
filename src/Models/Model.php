@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Query;
+use App\Relation;
 use App\Repositories\Repository;
 
 /**
@@ -13,6 +14,7 @@ abstract class Model
     protected bool $exists = false;
     private array $dirty = [];
     private array $original;
+    private array $relations = [];
 
     public function __construct(
         protected array $attributes = []
@@ -24,6 +26,12 @@ abstract class Model
     {
         if (array_key_exists($name, $this->attributes)) {
             return $this->attributes[$name];
+        }
+        if (method_exists($this, $name)) {
+            if (array_key_exists($name, $this->relations)){
+                return $this->relations[$name];
+            }
+            return call_user_func([$this, $name])->get();
         }
         return null;
     }
@@ -104,6 +112,16 @@ abstract class Model
         return $this;
     }
 
+    public function delete(): bool
+    {
+        if ($this->exists) {
+            return self::query()
+                ->where('id','=', $this->id)
+                ->delete();
+        }
+        return true;
+    }
+
     /**
      * @param bool $exists
      * @return Model
@@ -120,5 +138,28 @@ abstract class Model
     public function getOriginal(): array
     {
         return $this->original;
+    }
+
+    public function hasMany(string $model, string $foreignKey = null, string $localKey = 'id'): Relation
+    {
+        $name = debug_backtrace()[1]['function'];
+        return Relation::HasMany($name, $model, $foreignKey, $localKey, $this)->getQuery();
+    }
+
+    public function belongsTo(string $model, string $foreignKey = null, string $localKey = 'id'): Relation
+    {
+        $name = debug_backtrace()[1]['function'];
+        return Relation::BelongsTo($name, $model, $foreignKey, $localKey, $this)->getQuery();
+    }
+
+    /**
+     * @param string $relation
+     * @param Model|array $items
+     * @return Model
+     */
+    public function addRelation(string $relation, Model|array $items): Model
+    {
+        $this->relations[$relation] = $items;
+        return $this;
     }
 }

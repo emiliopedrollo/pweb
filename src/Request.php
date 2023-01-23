@@ -25,6 +25,7 @@ class Request
      */
     private $controller = null;
     protected array $matches = [];
+    protected ?string $referrer;
 
     public function __construct(
         protected readonly array $get,
@@ -34,6 +35,7 @@ class Request
     {
         list($this->uri) = explode('?',$server['REQUEST_URI']);
         $this->method = $post['_method'] ?? $server['REQUEST_METHOD'];
+        $this->referrer = $this->server['HTTP_REFERER'] ?? null;
 //        $this->middlewares = [
 //            'bind_parameters'
 //        ];
@@ -203,5 +205,21 @@ class Request
     {
         $this->controllerRequiresRequest = $controllerRequiresRequest;
         return $this;
+    }
+
+    public function currentRoute(): ?string {
+        return $this->route?->getName();
+    }
+
+    public function test() {
+        return 'teste';
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getReferrer(): ?string
+    {
+        return $this->referrer;
     }
 }

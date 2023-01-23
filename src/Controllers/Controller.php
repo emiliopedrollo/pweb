@@ -15,7 +15,7 @@ class Controller
     /**
      * @return Application
      */
-    public function getApp(): Application
+    public function app(): Application
     {
         return $this->app;
     }

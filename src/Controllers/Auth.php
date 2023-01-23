@@ -2,8 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Actions\ExpressionResolver;
-use App\DB;
 use App\Exceptions\InvalidCredentialsException;
 use App\Models\User;
 use App\Repositories\UserRepository;
@@ -11,9 +9,10 @@ use App\Request;
 use App\Response;
 use App\Session;
 use Exception;
-use PDO;
 
 class Auth extends Controller{
+
+    const HOME= '/posts';
 
     /**
      * @throws Exception
@@ -45,7 +44,7 @@ class Auth extends Controller{
             return Response::redirect('/login');
         }
 
-        return Response::redirect('/');
+        return Response::redirect(self::HOME);
     }
 
     public function register(Request $request) {
@@ -83,7 +82,7 @@ class Auth extends Controller{
 
         Session::add('user', $user->id);
 
-        return Response::redirect('/');
+        return Response::redirect(self::HOME);
     }
 
     public function logout() {

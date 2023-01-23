@@ -15,7 +15,7 @@ class CommentRepository extends Repository
 
     protected string $table = 'comentario';
     protected string $model = Comment::class;
-    protected static array $columnMap = [
+    public static array $columnMap = [
         'codigo' => 'id',
         'conteudo' => 'content',
         'codigoPublicacao' => 'post_id',

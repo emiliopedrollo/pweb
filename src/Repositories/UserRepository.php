@@ -14,7 +14,7 @@ class UserRepository extends Repository
 
     protected string $table = 'usuario';
     protected string $model = User::class;
-    protected static array $columnMap = [
+    public static array $columnMap = [
         'codigoUsuario' => 'id',
         'email' => 'email',
         'senha' => 'password',

@@ -2,6 +2,7 @@
 
 namespace App\Middlewares;
 
+use App\Auth;
 use App\Repositories\UserRepository;
 use App\Request;
 use App\Session;
@@ -19,6 +20,7 @@ class StartSession extends Middleware
 
         if (Session::has('user')) {
             $user = (new UserRepository())->find(Session::get('user'));
+            Auth::$user = $user;
             $request->setUser($user);
             app(View::class)->setAuth($user);
         }

@@ -1,5 +1,9 @@
 <?php
 
 return [
-    'views' => './views'
+    'views' => './views',
+
+    'aliases' => [
+        'Auth' => \App\Auth::class
+    ]
 ];

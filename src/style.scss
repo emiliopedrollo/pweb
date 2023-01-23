@@ -1,0 +1,22 @@
+// Body
+$body-bg: #f8fafc;
+
+// Typography
+$font-family-sans-serif: 'Nunito', sans-serif;
+$font-size-base: 0.9rem;
+$line-height-base: 1.6;
+
+$grid-gutter-width: 0 !default;
+
+// Fonts
+//@import url('https://fonts.bunny.net/css?family=Nunito');
+//noinspection CssUnknownTarget
+@import url('https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap');
+
+// Bootstrap
+@import 'bootstrap/scss/bootstrap';
+
+
+textarea {
+  resize: none;
+}

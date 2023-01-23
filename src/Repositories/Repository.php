@@ -18,12 +18,12 @@ abstract class Repository
     /**
      * @var array
      */
-    protected static array $columnMap = [];
+    public static array $columnMap = [];
 
     /**
      * @var array
      */
-    protected array $casts = [];
+    public array $casts = [];
 
     /**
      * @var string

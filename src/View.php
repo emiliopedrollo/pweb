@@ -49,7 +49,7 @@ class View
     protected array $componentStack = [];
     protected array $conditions = [];
     protected array $contentTags = ['{{', '}}'];
-    public string $csrf_token = '';
+    public ?string $csrf_token = '';
     protected ?string $currentUrl;
     public ?User $currentUser = null;
     protected array $customDirectives = [];
@@ -2656,11 +2656,11 @@ class View
     }
 
     /**
-     * @param string $expression empty if it's inside a for loop.
+     * @param string|null $expression empty if it's inside a for loop.
      * @return string
      * @noinspection PhpUnused
      */
-    protected function compileEmpty(string $expression = ''): string
+    protected function compileEmpty(?string $expression = ''): string
     {
         if ($expression == '') {
             $empty = '$__empty_' . $this->forelseCounter--;

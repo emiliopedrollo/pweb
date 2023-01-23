@@ -2,6 +2,7 @@
 
 use App\Application;
 use App\Enums\View\CompileFileName;
+use App\Request;
 use App\Router;
 use App\Session;
 use App\View;
@@ -44,6 +45,36 @@ if (!function_exists('route')) {
     }
 }
 
+if (!function_exists('request')) {
+    function request(): Request {
+        return app(Request::class);
+    }
+}
+
+if (!function_exists('redirect')) {
+    function redirect(string $url): Response {
+        return Response::redirect($url);
+    }
+}
+
+if (!function_exists('back')) {
+    function back(): Response
+    {
+        return Response::back();
+    }
+}
+
+if (!function_exists('excerpt')) {
+    function excerpt(string $text, int $length): string
+    {
+        if (strlen($text) <= $length) {
+            return $text;
+        } else {
+            return explode("\n",wordwrap($text,$length))[0].'...';
+        }
+    }
+}
+
 if (!function_exists('old')) {
     function old($value, $default = null): mixed {
         return Session::get("old.$value", $default);
@@ -51,6 +82,11 @@ if (!function_exists('old')) {
 }
 
 
+if (!function_exists('__')) {
+    function __($string, $replacements = [], $locale = null) {
+        return $string;
+    }
+}
 if (!function_exists('env')) {
     function env($env, mixed $default = null): mixed {
 

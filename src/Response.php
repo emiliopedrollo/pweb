@@ -34,6 +34,11 @@ class Response
         HTML)->addHeader('Location', $url);
     }
 
+    public static function back(): static
+    {
+        return self::redirect(app(Request::class)->getReferrer());
+    }
+
     public static function make($content = null): static
     {
         return new static(content: $content);

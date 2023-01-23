@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use App\Application;
+use App\Controllers\Auth;
 use App\Request;
 use App\Response;
 
@@ -21,7 +22,7 @@ class Handler
         } elseif ($exception instanceof NotFoundException) {
             return Response::make(view('404'))->setCode(404);
         } elseif ($exception instanceof GuestOnlyRouteException) {
-            return Response::redirect('/');
+            return Response::redirect(Auth::HOME);
         }
 
         header('Internal Server Error', response_code: 500);

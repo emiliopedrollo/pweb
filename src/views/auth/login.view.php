@@ -6,7 +6,7 @@
         @slot('logo')
             <div class="col-sm-6">
                 <a href="/">
-                    @include('components.application-logo', ['attributes' => 'height="9em" width="auto"  class="mt-3"'])
+                    @include('components.application-logo', ['attributes' => 'height="9em" class="mt-3"'])
                 </a>
             </div>
         @endslot
